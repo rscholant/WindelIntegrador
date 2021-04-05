@@ -1,0 +1,6 @@
+Release/
+node_modules/
+rcedit/node_modules/
+!vendor/nssm.exe
+Sincronizador.log
+local.cfg
