@@ -1,6 +1,6 @@
 @ECHO OFF
 
-SET SERVICENAME="Windel Sincronizador"
+SET SERVICENAME="Windel Integrador"
 SET NSSM="%~dp0\nssm.exe"
 
 ECHO INSTALLING SERVICE %SERVICENAME%
@@ -8,9 +8,9 @@ ECHO INSTALLING SERVICE %SERVICENAME%
 %NSSM% stop %SERVICENAME%
 %NSSM% remove %SERVICENAME% confirm
 %NSSM% install %SERVICENAME% %SERVICENAME%
-%NSSM% set %SERVICENAME% Application %~dp0Sincronizador.exe
+%NSSM% set %SERVICENAME% Application %~dp0Integrador.exe
 %NSSM% set %SERVICENAME% AppDirectory %~dp0
-%NSSM% set %SERVICENAME% Description "Sincronizador Windel Novo"
+%NSSM% set %SERVICENAME% Description "Integrador Windel"
 %NSSM% set %SERVICENAME% Start SERVICE_AUTO_START
 %NSSM% set %SERVICENAME% AppStopMethodSkip 0
 %NSSM% set %SERVICENAME% AppStopMethodConsole 0

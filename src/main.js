@@ -31,7 +31,7 @@ module.exports = async (newDirPath, serverUrl, currentVersion) => {
   await firebird.connect(uri, false);
 
   var configResults = await firebird.query(
-    `SELECT chave,valor FROM REPLIC_CONFIG `,
+    `SELECT chave,valor FROM INTEGRADOR_CONFIG `,
     [],
     ["chave", "valor"]
   );
@@ -83,7 +83,7 @@ module.exports = async (newDirPath, serverUrl, currentVersion) => {
 
     try {
       var canPush = false;
-      var configAuth = fs.readFileSync(dirPath + "/sincronizador.cfg", {
+      var configAuth = fs.readFileSync(dirPath + "/integrador.cfg", {
         encoding: "utf8",
       });
       if (configAuth == "") {
@@ -94,9 +94,8 @@ module.exports = async (newDirPath, serverUrl, currentVersion) => {
 
       //PULL
 
-      //disable replication for session
       await firebird.execute(
-        "select rdb$set_context('USER_SESSION', 'DONT_TRIGGER_REPLIC', 'S') from rdb$database",
+        "select rdb$set_context('USER_SESSION', 'DONT_TRIGGER_INTEGRADOR', 'S') from rdb$database",
         []
       );
 
@@ -159,26 +158,15 @@ module.exports = async (newDirPath, serverUrl, currentVersion) => {
                             `,
                 modificationValues
               );
-
-              if (
-                modification.tabela == "MOBILE_PEDIDO" ||
-                modification.tabela == "MOBILE_PEDIDO_PRODUTOS"
-              ) {
-                idPedidos = Object.assign(
-                  idPedidos,
-                  await trataPedidos.trata(firebird, modification, idPedidos)
-                );
-              } else {
-                await firebird.execute(
-                  "UPDATE OR INSERT INTO replic_data_status (UUID,Tabela,data_operacao,situacao,sincronizado) VALUES (?,?,?,?,1) MATCHING(UUID)",
-                  [
-                    modification.uuid,
-                    modification.tabela,
-                    new Date(modification.data_operacao),
-                    modification.situacao,
-                  ]
-                );
-              }
+              await firebird.execute(
+                "UPDATE OR INSERT INTO integrador_data_status (UUID,Tabela,data_operacao,situacao,sincronizado) VALUES (?,?,?,?,1) MATCHING(UUID)",
+                [
+                  modification.uuid,
+                  modification.tabela,
+                  new Date(modification.data_operacao),
+                  modification.situacao,
+                ]
+              );
             } else if (modification.situacao == 2) {
               //deletado
 
@@ -186,14 +174,12 @@ module.exports = async (newDirPath, serverUrl, currentVersion) => {
               //deleting locally
 
               await firebird.execute(
-                `
-                                DELETE FROM ${modification.tabela} WHERE SINC_UUID = ?
-                            `,
+                `DELETE FROM ${modification.tabela} WHERE SINC_UUID = ? `,
                 params
               );
 
               await firebird.execute(
-                "UPDATE OR INSERT INTO replic_data_status (UUID,Tabela,data_operacao,situacao,sincronizado) VALUES (?,?,?,?,1) MATCHING(UUID)",
+                "UPDATE OR INSERT INTO integrador_data_status (UUID,Tabela,data_operacao,situacao,sincronizado) VALUES (?,?,?,?,1) MATCHING(UUID)",
                 [
                   modification.uuid,
                   modification.tabela,
@@ -214,14 +200,13 @@ module.exports = async (newDirPath, serverUrl, currentVersion) => {
       config.date_since_last_pull = result.data.next_since;
       await firebird.execute(
         `
-                UPDATE OR INSERT INTO REPLIC_CONFIG (CHAVE, VALOR) VALUES (?,?)
+                UPDATE OR INSERT INTO INTEGRADOR_CONFIG (CHAVE, VALOR) VALUES (?,?)
             `,
         ["date_since_last_pull", config.date_since_last_pull + ""]
       );
 
-      //reenable replication on session
       await firebird.execute(
-        "select rdb$set_context('USER_SESSION', 'DONT_TRIGGER_REPLIC', null) from rdb$database",
+        "select rdb$set_context('USER_SESSION', 'DONT_TRIGGER_INTEGRADOR', null) from rdb$database",
         []
       );
 
@@ -232,7 +217,7 @@ module.exports = async (newDirPath, serverUrl, currentVersion) => {
         var results = await firebird.query(
           `
                 select first 150 uuid, tabela, data_operacao, situacao, sincronizado
-                    from replic_data_status
+                    from integrador_data_status
                     where sincronizado = 0
                 ORDER BY prioridade DESC, data_operacao ASC
                 `,
@@ -242,7 +227,7 @@ module.exports = async (newDirPath, serverUrl, currentVersion) => {
         var count = await firebird.query(
           `
                 select count(*) as CONTADOR
-                    from replic_data_status
+                    from integrador_data_status
                     where sincronizado = 0
                 `,
           [],
@@ -287,7 +272,7 @@ module.exports = async (newDirPath, serverUrl, currentVersion) => {
               modificationsUUIDs.push(modificationsToSendToCloud[i].uuid);
             }
             await firebird.execute(
-              `UPDATE replic_data_status SET sincronizado = 1 WHERE uuid IN (${modificationsMarkers.join(
+              `UPDATE integrador_data_status SET sincronizado = 1 WHERE uuid IN (${modificationsMarkers.join(
                 ","
               )})`,
               modificationsUUIDs

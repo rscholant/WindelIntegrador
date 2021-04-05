@@ -14,7 +14,7 @@ module.exports = {
         );
         if (tamanhoIdentificador < identificador.length) {
           await firebird.execute(
-            "UPDATE OR INSERT INTO replic_data_status " +
+            "UPDATE OR INSERT INTO INTEGRADOR_DATA_STATUS " +
               "(UUID,Tabela,data_operacao,situacao,sincronizado) VALUES (?,?,?,?,0) MATCHING(UUID)",
             [
               modification.uuid,
@@ -31,7 +31,7 @@ module.exports = {
       }
     }
     await firebird.execute(
-      "UPDATE OR INSERT INTO replic_data_status " +
+      "UPDATE OR INSERT INTO INTEGRADOR_DATA_STATUS " +
         "(UUID,Tabela,data_operacao,situacao,sincronizado) VALUES (?,?,?,?,1) MATCHING(UUID)",
       [
         modification.uuid,
@@ -457,7 +457,7 @@ module.exports = {
     );
 
     await firebird.execute(
-      "UPDATE OR INSERT INTO replic_data_status " +
+      "UPDATE OR INSERT INTO INTEGRADOR_DATA_STATUS " +
         "(UUID,Tabela,data_operacao,situacao,sincronizado) VALUES (?,?,?,?,0) MATCHING(UUID)",
       [
         modification.uuid,

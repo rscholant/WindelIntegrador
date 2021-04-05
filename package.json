@@ -1,14 +1,14 @@
 {
-  "name": "Sincronizador",
+  "name": "integrador",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "bin": {
-    "Sincronizador": "index.js"
+    "Integrador": "index.js"
   },
   "scripts": {
     "start": "node index.js run",
-    "pkg": "pkg package.json --output=Release/Sincronizador.exe --target=node14-win-x64"
+    "pkg": "pkg package.json --output=Release/Integrador.exe --target=node14-win-x64"
   },
   "author": "",
   "license": "ISC",

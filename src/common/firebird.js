@@ -45,7 +45,7 @@ module.exports = class Firebase {
       });
     } else {
       this.firebirdAttachment = await this.firebirdClient.connect(uri, {
-        username: "SINCRONIZADOR",
+        username: "INTEGRADOR",
         password: "WINDELMOB",
       });
     }

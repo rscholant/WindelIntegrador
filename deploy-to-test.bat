@@ -1,6 +1,6 @@
 call ".\build.bat"
 cd Release
-tar.exe -cf ../release_teste.zip .
+tar.exe -cf ../release_integrador.zip .
 cd ..
-copy release_teste.zip "\\server\Temp\exe_banco_teste\windel testes\Mobile"
-del /f release_teste.zip
+copy release_integrador.zip "\\server\Temp\exe_banco_teste\windel testes\Integrador"
+del /f release_integrador.zip

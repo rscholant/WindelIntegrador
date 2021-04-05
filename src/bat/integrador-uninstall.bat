@@ -1,6 +1,6 @@
 @ECHO OFF
 
-SET SERVICENAME="Windel Sincronizador"
+SET SERVICENAME="Windel Integrador"
 SET NSSM="%~dp0\nssm.exe"
 
 ECHO UNINSTALLING SERVICE %SERVICENAME%
